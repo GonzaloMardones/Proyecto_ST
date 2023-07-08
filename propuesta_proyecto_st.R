@@ -80,19 +80,40 @@ nuevos_datos$prediccion  <- predict(modelo_regresion, newdata = nuevas_exogenas)
 ggplot() +
   geom_line(data = df_participacion_filtrados, aes(x = Fecha, y = Tasa), color = "blue", linetype = "solid", size = 1) +
   geom_line(data = nuevos_datos, aes(x = fecha, y = prediccion), color = "red", linetype = "dashed", size = 0.5) +
-  labs(x = "Fecha", y = "Venta de Créditos", title = "Datos Originales y Predicciones del Modelo") +
+  labs(x = "Fecha", y = "Tasa de Participación", title = "Datos Originales y Predicciones del Modelo") +
   theme_minimal()
 
 
-# Asignar las fechas a ST
-print(serie_tiempo)
-plot(serie_tiempo, xlab = "Fecha", ylab = "Tasa", main = "Tasa de Participación")
+# Ajustar un modelo ARMA a los residuos del modelo de regresión
+residuos <- residuals(modelo_regresion)
 
-fit <- auto.arima(serie_tiempo)
-fit
-plot(fit)
-plot(forecast(fit, h=24))
+modelo_arima <- auto.arima(residuos)
+summary(modelo_arima)
+plot(modelo_arima)
+
+# Cargar la librería necesaria
+library(stats)
+
+# Realizar la prueba de la blancura
+acf_result <- acf(serie_tiempo)
+
+# Imprimir los coeficientes de autocorrelación
+print(acf_result$acf)
+
+# Graficar los coeficientes de autocorrelación
+plot(acf_result, main = "Prueba de Blancura - Coeficientes de Autocorrelación")
+
+
+# Asignar las fechas a ST
+#print(serie_tiempo)
+#plot(serie_tiempo, xlab = "Fecha", ylab = "Tasa", main = "Tasa de Participación")
+
+#fit <- auto.arima(serie_tiempo)
+#fit
+#plot(fit)
+#plot(forecast(fit, h=24))
 
 # Serie de tiempo General
-print(serie_tiempo_general)
-plot(serie_tiempo_general)
+#print(serie_tiempo_general)
+#plot(serie_tiempo_general)
+
